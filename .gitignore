@@ -1,3 +1,18 @@
+<<<<<<< HEAD
+=======
+# build output
+dist/
+
+# generated types
+.astro/
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+>>>>>>> c69928e (feat: init)
 # Logs
 logs
 *.log
