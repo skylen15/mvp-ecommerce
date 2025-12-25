@@ -3,11 +3,20 @@
 	"include": [".astro/types.d.ts", "**/*"],
 	"exclude": ["dist"],
 	"compilerOptions": {
+		"plugins": [
+			{
+				"name": "@effect/language-service",
+			},
+		],
 		"paths": {
 			"@components/*": ["./src/components/*"],
 			"@layouts/*": ["./src/layouts/*"],
 			"@server/*": ["./src/server/*"],
 		},
-		"verbatimModuleSyntax": true,
+		"incremental": true,
+		"composite": true,
+		"moduleDetection": "force",
+		"declarationMap": true,
+		"sourceMap": true,
 	},
 }

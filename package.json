@@ -9,6 +9,10 @@
 		"astro": "astro"
 	},
 	"dependencies": {
-		"astro": "^5.16.6"
+		"astro": "^5.16.6",
+		"effect": "^3.19.13"
+	},
+	"devDependencies": {
+		"@effect/language-service": "^0.62.5"
 	}
 }
