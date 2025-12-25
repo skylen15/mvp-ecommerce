@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # build output
 dist/
 
@@ -12,7 +10,6 @@ dist/
 # jetbrains setting folder
 .idea/
 
->>>>>>> c69928e (feat: init)
 # Logs
 logs
 *.log
