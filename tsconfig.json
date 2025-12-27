@@ -9,9 +9,7 @@
 			},
 		],
 		"paths": {
-			"@components/*": ["./src/components/*"],
-			"@layouts/*": ["./src/layouts/*"],
-			"@server/*": ["./src/server/*"],
+			"@/*": ["./src/*"],
 		},
 		"incremental": true,
 		"composite": true,

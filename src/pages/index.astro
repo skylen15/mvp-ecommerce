@@ -1,11 +1,29 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import ProtectedLayout from "@/layouts/procted-layout.astro";
+import { Button } from "@/components/starwind/button";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+if (!Astro.locals.user?.id) {
+	return Astro.redirect("/auth/sign-in");
+}
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<ProtectedLayout>
+	<Button>Sign Out</Button>
+	<div>Home</div>
+</ProtectedLayout>
+
+<script>
+	import { authClient } from "@/lib/auth-client";
+
+	document.querySelector("button")?.addEventListener(
+		"click",
+		async () =>
+			await authClient.signOut({
+				fetchOptions: {
+					onSuccess: () => {
+						window.location.pathname = "/";
+					},
+				},
+			}),
+	);
+</script>

@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# better-auth
+better-auth_migrations/
+
 # generated types
 .astro/
 

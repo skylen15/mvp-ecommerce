@@ -1,0 +1,17 @@
+name: mvp-ecommerce
+services:
+    postgres:
+        image: postgres:latest
+        ports:
+            - 5432:${DATABASE_PORT:-5432}
+        restart: always
+        environment:
+            - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-"password"}
+            - POSTGRES_USER=${DATABASE_USER:-"postgres"}
+            - POSTGRES_DB=${DATABASE_NAME:-"mvp-ecommerce"}
+        volumes:
+            - postgres_db:/var/lib/postgresql
+
+volumes:
+    postgres_db:
+        driver: local

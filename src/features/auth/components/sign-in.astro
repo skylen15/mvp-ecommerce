@@ -1,0 +1,89 @@
+---
+import { Button } from "@/components/starwind/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/starwind/card";
+import { Label } from "@/components/starwind/label";
+import { Input } from "@/components/starwind/input";
+import Layout from "@/layouts/base-layout.astro";
+
+if (Astro.locals.user?.id) {
+	return Astro.redirect("/");
+}
+---
+
+<Layout>
+	<main class="flex-1 p-4 flex items-center justify-center">
+		<Card>
+			<CardHeader>
+				<CardTitle>Login to your account</CardTitle>
+				<CardDescription>
+					Enter your email below to login to your account
+				</CardDescription>
+			</CardHeader>
+			<form id="login-form">
+				<CardContent>
+					<div class="flex flex-col gap-6">
+						<div class="grid gap-2">
+							<Label for="email">Email</Label>
+							<Input
+								id="email"
+								type="email"
+								name="email"
+								placeholder="m@example.com"
+								required
+							/>
+						</div>
+						<div class="grid gap-2">
+							<div class="flex items-center">
+								<Label for="password">Password</Label>
+								<a
+									href="#"
+									class="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+								>
+									Forgot your password?
+								</a>
+							</div>
+							<Input
+								id="password"
+								type="password"
+								name="password"
+								placeholder="********"
+								required
+							/>
+						</div>
+					</div>
+				</CardContent>
+				<CardFooter class="items-center flex justify-between p-8 pt-0">
+					<Button variant="outline" href="/auth/sign-up"
+						>Create Account</Button
+					>
+					<Button type="submit"> Sign In </Button>
+				</CardFooter>
+			</form>
+		</Card>
+	</main>
+</Layout>
+
+<script>
+	import { authClient } from "@/lib/auth-client";
+
+	const formSelector = document.querySelector(
+		"#login-form",
+	) as HTMLFormElement;
+
+	formSelector.addEventListener("submit", async (e) => {
+		e.preventDefault();
+
+		const formData = new FormData(e.target as HTMLFormElement);
+		await authClient.signIn.email({
+			email: formData.get("email") as string,
+			password: formData.get("password") as string,
+		});
+	});
+</script>
