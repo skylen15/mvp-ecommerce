@@ -10,80 +10,87 @@ import {
 } from "@/components/starwind/card";
 import { Label } from "@/components/starwind/label";
 import { Input } from "@/components/starwind/input";
-import Layout from "@/layouts/BaseLayout.astro";
-
-if (Astro.locals.user?.id) {
-	return Astro.redirect("/");
-}
+import Spinner from "@/components/starwind/spinner";
+import {
+	Item,
+	ItemContent,
+	ItemMedia,
+	ItemTitle,
+} from "@/components/starwind/item";
+import X from "@tabler/icons/outline/x.svg";
 ---
 
-<Layout>
-	<main class="flex-1 p-4 flex items-center justify-center">
-		<Card>
-			<CardHeader>
-				<CardTitle>Login to your account</CardTitle>
-				<CardDescription>
-					Enter your email below to login to your account
-				</CardDescription>
-			</CardHeader>
-			<form id="login-form">
-				<CardContent>
-					<div class="flex flex-col gap-6">
-						<div class="grid gap-2">
-							<Label for="email">Email</Label>
-							<Input
-								id="email"
-								type="email"
-								name="email"
-								placeholder="m@example.com"
-								required
-							/>
-						</div>
-						<div class="grid gap-2">
-							<div class="flex items-center">
-								<Label for="password">Password</Label>
-								<a
-									href="#"
-									class="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-								>
-									Forgot your password?
-								</a>
-							</div>
-							<Input
-								id="password"
-								type="password"
-								name="password"
-								placeholder="********"
-								required
-							/>
-						</div>
+<main class="flex-1 p-4 flex items-center justify-center">
+	<Card>
+		<CardHeader>
+			<CardTitle>Login to your account</CardTitle>
+			<CardDescription>
+				Enter your email below to login to your account
+			</CardDescription>
+		</CardHeader>
+		<form id="login-form" method="post">
+			<CardContent>
+				<div class="flex flex-col gap-6">
+					<div class="grid gap-2">
+						<Label for="email">Email</Label>
+						<Input
+							id="email"
+							type="email"
+							name="email"
+							placeholder="m@example.com"
+							required
+						/>
 					</div>
-				</CardContent>
-				<CardFooter class="items-center flex justify-between p-8 pt-0">
-					<Button variant="outline" href="/auth/sign-up"
-						>Create Account</Button
+					<div class="grid gap-2">
+						<div class="flex items-center">
+							<Label for="password">Password</Label>
+							<a
+								tabindex="-1"
+								href="/auth/forgot-password"
+								class="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+							>
+								Forgot your password?
+							</a>
+						</div>
+						<Input
+							id="password"
+							type="password"
+							name="password"
+							placeholder="********"
+							required
+						/>
+					</div>
+					<Item
+						variant="outline"
+						size="sm"
+						class="hidden text-error border-error transition-all"
 					>
-					<Button type="submit"> Sign In </Button>
-				</CardFooter>
-			</form>
-		</Card>
-	</main>
-</Layout>
+						<ItemMedia>
+							<X class="size-5" />
+						</ItemMedia>
+						<ItemContent>
+							<ItemTitle id="error" />
+						</ItemContent>
+					</Item>
+				</div>
+			</CardContent>
+			<CardFooter class="items-center flex justify-between p-8 pt-0">
+				<Button variant="outline" href="/auth/sign-up"
+					>Create Account</Button
+				>
+				<Button type="submit">
+					<Spinner class="spinner mr-2 size-4 hidden" />
+					Sign In
+				</Button>
+			</CardFooter>
+		</form>
+	</Card>
+</main>
 
 <script>
-	import { authClient } from "@/lib/auth-client";
+	import { submitForm } from "../utils/submit";
 
-	const formSelector = document.querySelector(
-		"#login-form",
-	) as HTMLFormElement;
-
-	formSelector.addEventListener("submit", async (e) => {
-		e.preventDefault();
-
-		const formData = new FormData(e.target as HTMLFormElement);
-		await authClient.signIn.email({
-			email: formData.get("email") as string,
-			password: formData.get("password") as string,
-		});
+	submitForm({
+		formSelector: "#login-form",
 	});
 </script>
