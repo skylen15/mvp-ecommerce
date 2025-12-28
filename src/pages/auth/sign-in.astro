@@ -1,5 +1,12 @@
 ---
 import SignInForm from "@/features/auth/components/SignIn.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+if (Astro.locals.user?.id) {
+	return Astro.redirect("/");
+}
 ---
 
-<SignInForm />
+<BaseLayout>
+	<SignInForm />
+</BaseLayout>
