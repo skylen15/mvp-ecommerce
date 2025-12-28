@@ -5,9 +5,11 @@ import { authClient } from "@/lib/auth-client";
 export const submitForm = ({
 	formSelector,
 	type = "sign-in",
+	redirectUrl = "/",
 }: {
 	formSelector: string;
 	type?: "sign-in" | "sign-up";
+	redirectUrl?: string;
 }) => {
 	const formEl = document.querySelector(formSelector) as HTMLFormElement;
 
@@ -20,12 +22,6 @@ export const submitForm = ({
 	const item = errEl.closest("[data-slot='item']") as HTMLDivElement;
 
 	const fetchOptions = {
-		onRequest: () => {
-			if (spinner) {
-				spinner.classList.remove("hidden");
-			}
-			submitBtn.disabled = true;
-		},
 		onError: ({ error }) => {
 			if (spinner) {
 				spinner.classList.add("hidden");
@@ -45,12 +41,22 @@ export const submitForm = ({
 			if (errEl) {
 				item?.classList.add("hidden");
 			}
-			window.location.assign("/");
+			window.location.assign(redirectUrl);
 		},
 	} satisfies ClientFetchOption;
 
 	formEl?.addEventListener("submit", async (e) => {
 		e.preventDefault();
+
+		if (submitBtn.disabled) {
+			return;
+		}
+
+		if (spinner) {
+			spinner.classList.remove("hidden");
+		}
+
+		submitBtn.disabled = true;
 		const formData = new FormData(e.target as HTMLFormElement);
 
 		if (type === "sign-in") {
