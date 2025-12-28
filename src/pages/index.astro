@@ -1,16 +1,16 @@
 ---
-import ProtectedLayout from "@/layouts/ProtectedLayout.astro";
 import { Button } from "@/components/starwind/button";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
 if (!Astro.locals.user?.id) {
 	return Astro.redirect("/auth/sign-in");
 }
 ---
 
-<ProtectedLayout>
+<BaseLayout title="Home" description="Welcome to your MVP ecommerce account">
 	<Button>Sign Out</Button>
 	<div>Home</div>
-</ProtectedLayout>
+</BaseLayout>
 
 <script>
 	import { authClient } from "@/lib/auth-client";

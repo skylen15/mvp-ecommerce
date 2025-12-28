@@ -1,16 +1,6 @@
 import { createAuthClient } from "better-auth/client";
+import { adminClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-	fetchOptions: {
-		onSuccess: (ctx) => {
-			const authToken = ctx.response.headers.get("set-auth-token");
-			if (authToken) {
-				localStorage.setItem("bearer_token", authToken);
-			}
-		},
-		auth: {
-			type: "Bearer",
-			token: () => localStorage.getItem("bearer_token") || "",
-		},
-	},
+	plugins: [adminClient()],
 });

@@ -31,6 +31,7 @@ export interface Session {
   createdAt: Generated<Timestamp>;
   expiresAt: Timestamp;
   id: Generated<string>;
+  impersonatedBy: string | null;
   ipAddress: string | null;
   token: string;
   updatedAt: Timestamp;
@@ -39,12 +40,16 @@ export interface Session {
 }
 
 export interface User {
+  banExpires: Timestamp | null;
+  banned: boolean | null;
+  banReason: string | null;
   createdAt: Generated<Timestamp>;
   email: string;
   emailVerified: boolean;
   id: Generated<string>;
   image: string | null;
   name: string;
+  role: string | null;
   updatedAt: Generated<Timestamp>;
 }
 

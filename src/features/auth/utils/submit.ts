@@ -1,5 +1,3 @@
-import type { ClientFetchOption } from "better-auth";
-
 import { authClient } from "@/lib/auth-client";
 
 export const submitForm = ({
@@ -21,6 +19,10 @@ export const submitForm = ({
 	const errEl = formEl.querySelector("#error") as HTMLDivElement;
 	const item = errEl.closest("[data-slot='item']") as HTMLDivElement;
 
+	type FetchOpt = Parameters<
+		typeof authClient.signIn.email
+	>[0]["fetchOptions"];
+
 	const fetchOptions = {
 		onError: ({ error }) => {
 			if (spinner) {
@@ -33,7 +35,7 @@ export const submitForm = ({
 				errEl.textContent = error.message;
 			}
 		},
-		onSuccess: () => {
+		onSuccess: ({ data }) => {
 			if (spinner) {
 				spinner.classList.add("hidden");
 			}
@@ -41,9 +43,11 @@ export const submitForm = ({
 			if (errEl) {
 				item?.classList.add("hidden");
 			}
-			window.location.assign(redirectUrl);
+			const callbackUrl =
+				data?.user?.role === "admin" ? "/admin" : "/dashboard";
+			window.location.assign(callbackUrl || redirectUrl);
 		},
-	} satisfies ClientFetchOption;
+	} satisfies FetchOpt;
 
 	formEl?.addEventListener("submit", async (e) => {
 		e.preventDefault();

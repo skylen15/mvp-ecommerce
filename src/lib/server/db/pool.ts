@@ -1,9 +1,7 @@
-import { Kysely, PostgresDialect } from "kysely";
 import { Config, Effect, Redacted } from "effect";
 import { Pool } from "pg";
 
-import type { DB } from "./db";
-import { RuntimeServer } from "../runtime";
+import { EnvProviderLayer } from "../env";
 
 export const pool = await Effect.gen(function* () {
 	return new Pool({
@@ -14,12 +12,4 @@ export const pool = await Effect.gen(function* () {
 		user: Redacted.value(yield* Config.redacted("DATABASE_USER")),
 		password: Redacted.value(yield* Config.redacted("DATABASE_PASSWORD")),
 	});
-}).pipe(RuntimeServer.runPromise);
-
-const dialect = new PostgresDialect({
-	pool,
-});
-
-export const db = new Kysely<DB>({
-	dialect,
-});
+}).pipe(Effect.provide(EnvProviderLayer), Effect.runPromise);
