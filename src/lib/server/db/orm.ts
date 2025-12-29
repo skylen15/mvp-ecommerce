@@ -1,11 +1,11 @@
-import { Kysely, PostgresDialect } from "kysely";
+import { hashPassword } from "better-auth/crypto";
 import { Data, DateTime, Effect, flow, Schema } from "effect";
+import { Kysely, PostgresDialect } from "kysely";
 
 import { Account, User, UserId } from "@/features/auth/schema";
-import { pool } from "./pool";
-import type { DB } from "./db";
-import { hashPassword } from "better-auth/crypto";
 import { singleResult } from "../utils/filter";
+import type { DB } from "./db";
+import { pool } from "./pool";
 
 class DbError extends Data.TaggedError("DBError")<{
 	cause: unknown;
@@ -47,76 +47,84 @@ export class DbORM extends Effect.Service<DbORM>()(
 			return {
 				query,
 				execute,
-				createAdminUser: (
-					data: typeof User.Type & {
-						password: string;
-					},
-				) =>
-					Effect.gen(function* () {
-						const createdUser = yield* execute(User, (values) =>
-							query((_) =>
-								_.insertInto("user")
-									.values({
-										...values,
-										emailVerified: false,
-									})
-									.returning(["id as userId"])
-									.execute(),
-							),
-						)(data).pipe(
-							singleResult(
-								() =>
-									new DbError({
-										cause: "Failed to create admin user",
-									}),
-							),
-						);
+				user: {
+					createAdmin: (
+						data: typeof User.Type & {
+							password: string;
+						},
+					) =>
+						Effect.gen(function* () {
+							const createdUser = yield* execute(User, (values) =>
+								query((_) =>
+									_.insertInto("user")
+										.values({
+											...values,
+											emailVerified: false,
+										})
+										.returning(["id as userId"])
+										.execute(),
+								),
+							)(data).pipe(
+								singleResult(
+									() =>
+										new DbError({
+											cause: "Failed to create admin user",
+										}),
+								),
+							);
 
-						const accountData = {
-							userId: UserId.make(createdUser.userId),
-							accountId: UserId.make(createdUser.userId),
-							providerId: "credential",
-							password: yield* Effect.promise(() =>
-								hashPassword(data.password),
-							),
-						} satisfies typeof Account.Type;
+							const accountData = {
+								userId: UserId.make(createdUser.userId),
+								accountId: UserId.make(createdUser.userId),
+								providerId: "credential",
+								password: yield* Effect.promise(() =>
+									hashPassword(data.password),
+								),
+							} satisfies typeof Account.Type;
 
-						const createdAccount = yield* execute(Account, (acc) =>
-							query((_) =>
-								_.insertInto("account")
-									.values({
-										...acc,
-										password: accountData.password,
-										updatedAt: DateTime.formatIsoDateUtc(
-											DateTime.unsafeNow(),
-										),
-									})
-									.returning(["id as accountId"])
-									.execute(),
-							),
-						)(accountData).pipe(
-							singleResult(
-								() =>
-									new DbError({
-										cause: "Failed to create account user",
-									}),
-							),
-						);
+							const createdAccount = yield* execute(
+								Account,
+								(acc) =>
+									query((_) =>
+										_.insertInto("account")
+											.values({
+												...acc,
+												password: accountData.password,
+												updatedAt:
+													DateTime.formatIsoDateUtc(
+														DateTime.unsafeNow(),
+													),
+											})
+											.returning(["id as accountId"])
+											.execute(),
+									),
+							)(accountData).pipe(
+								singleResult(
+									() =>
+										new DbError({
+											cause: "Failed to create account user",
+										}),
+								),
+							);
 
-						return createdAccount;
-					}),
+							return createdAccount;
+						}),
 
-				checkAdminExists: query((_) =>
-					_.selectFrom("user")
-						.where("role", "=", "admin")
-						.select(["id"])
-						.limit(1)
-						.execute(),
-				).pipe(
-					singleResult(
-						() => new DbError({ cause: "No admin user found" }),
+					checkAdminExists: query((_) =>
+						_.selectFrom("user")
+							.where("role", "=", "admin")
+							.select(["id"])
+							.limit(1)
+							.execute(),
+					).pipe(
+						singleResult(
+							() => new DbError({ cause: "No admin user found" }),
+						),
+						Effect.catchTag("DBError", () =>
+							Effect.succeed({ id: null }),
+						),
 					),
-				),
+				},
 			} as const;
 		}),
 	},

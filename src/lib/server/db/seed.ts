@@ -1,21 +1,21 @@
-import { Config, Effect, Redacted } from "effect";
-
-import { DbORM } from "./orm";
+import { Effect } from "effect";
+import { EnvConfig } from "../configs";
 import { RuntimeServer } from "../runtime";
+import { DbORM } from "./orm";
 
 Effect.gen(function* () {
 	const orm = yield* DbORM;
-	const adminExisted = yield* orm.checkAdminExists;
+	const config = yield* EnvConfig;
+
+	const adminExisted = yield* orm.user.checkAdminExists;
 
 	if (adminExisted.id) {
 		yield* Effect.log("Admin user already exists");
 		return;
 	}
 
-	yield* orm.createAdminUser({
-		email: Redacted.value(yield* Config.redacted("ADMIN_EMAIL")),
-		password: Redacted.value(yield* Config.redacted("ADMIN_PASSWORD")),
-		name: yield* Config.string("ADMIN_NAME"),
+	yield* orm.user.createAdmin({
+		...config.admin,
 		role: "admin",
 	});
 
@@ -23,8 +23,6 @@ Effect.gen(function* () {
 }).pipe(
 	Effect.catchTags({
 		DBError: (error) => Effect.logError("[DB Error]", error.cause),
-		ConfigError: (error) =>
-			Effect.logError("[Config Error]", error.message),
 	}),
 	RuntimeServer.runPromise,
 );

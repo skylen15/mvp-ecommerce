@@ -1,8 +1,8 @@
 import { Layer, ManagedRuntime } from "effect";
 
+import { EnvConfig } from "./configs";
 import { DbORM } from "./db/orm";
-import { EnvProviderLayer } from "./env";
 
 export const RuntimeServer = ManagedRuntime.make(
-	Layer.mergeAll(DbORM.Default, EnvProviderLayer),
+	Layer.mergeAll(DbORM.Default, EnvConfig.Default),
 );

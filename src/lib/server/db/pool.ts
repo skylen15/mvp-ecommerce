@@ -1,15 +1,12 @@
-import { Config, Effect, Redacted } from "effect";
+import { Effect } from "effect";
 import { Pool } from "pg";
 
-import { EnvProviderLayer } from "../env";
+import { EnvConfig } from "../configs";
 
 export const pool = await Effect.gen(function* () {
+	const config = yield* EnvConfig;
+	yield* Effect.log("Creating database pool");
 	return new Pool({
-		database: yield* Config.string("DATABASE_NAME"),
-		host: yield* Config.string("DATABASE_HOST").pipe(
-			Config.withDefault("localhost"),
-		),
-		user: Redacted.value(yield* Config.redacted("DATABASE_USER")),
-		password: Redacted.value(yield* Config.redacted("DATABASE_PASSWORD")),
+		connectionString: config.databaseUrl,
 	});
-}).pipe(Effect.provide(EnvProviderLayer), Effect.runPromise);
+}).pipe(Effect.provide(EnvConfig.Default), Effect.runPromise);
