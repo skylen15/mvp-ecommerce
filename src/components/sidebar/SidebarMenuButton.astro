@@ -1,0 +1,54 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { tv, type VariantProps } from "tailwind-variants";
+
+export const sidebarMenuButton = tv({
+	base: "hover:bg-accent hover:text-accent-foreground focus-visible:outline-ring active:bg-accent active:text-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+	variants: {
+		variant: {
+			default:
+				"hover:bg-accent hover:text-accent-foreground text-foreground",
+			outline:
+				"bg-background hover:bg-accent hover:text-accent-foreground shadow-[0_0_0_1px_hsl(var(--border))] hover:shadow-[0_0_0_1px_hsl(var(--accent))]",
+		},
+		size: {
+			default: "h-8 text-sm",
+			sm: "h-7 text-xs",
+			lg: "h-12 text-sm",
+		},
+		active: {
+			true: "bg-accent text-accent-foreground font-medium",
+			false: "",
+		},
+	},
+	defaultVariants: {
+		variant: "default",
+		size: "default",
+		active: false,
+	},
+});
+
+type Props = VariantProps<typeof sidebarMenuButton> &
+	HTMLAttributes<"button"> &
+	HTMLAttributes<"a"> & {
+		href?: string;
+	};
+
+const { class: className, variant, size, active, href, ...rest } = Astro.props;
+
+const Tag = href ? "a" : "button";
+---
+
+<Tag
+	data-slot="sidebar-menu-button"
+	class={sidebarMenuButton({
+		active,
+		size,
+		variant,
+		class: className,
+	})}
+	href={href}
+	{...rest}
+>
+	<slot />
+</Tag>

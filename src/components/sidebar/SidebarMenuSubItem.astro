@@ -1,0 +1,22 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { tv } from "tailwind-variants";
+
+type Props = HTMLAttributes<"li">;
+
+export const sidebarMenuSubItem = tv({
+	base: "group/menu-sub-item relative",
+});
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<li
+	data-slot="sidebar-menu-sub-item"
+	class={sidebarMenuSubItem({
+		class: className,
+	})}
+	{...rest}
+>
+	<slot />
+</li>

@@ -1,29 +1,11 @@
 ---
-import { Button } from "@/components/starwind/button";
-import BaseLayout from "@/layouts/BaseLayout.astro";
+import MainLayout from "@/layouts/MainLayout.astro";
 
 if (!Astro.locals.user?.id) {
-	return Astro.redirect("/auth/sign-in");
+    return Astro.redirect("/auth/sign-in");
 }
 ---
 
-<BaseLayout title="Home" description="Welcome to your MVP ecommerce account">
-	<Button>Sign Out</Button>
-	<div>Home</div>
-</BaseLayout>
-
-<script>
-	import { authClient } from "@/lib/auth-client";
-
-	document.querySelector("button")?.addEventListener(
-		"click",
-		async () =>
-			await authClient.signOut({
-				fetchOptions: {
-					onSuccess: () => {
-						window.location.assign("/");
-					},
-				},
-			}),
-	);
-</script>
+<MainLayout title="Home" description="Welcome to your MVP ecommerce account">
+    <div>Home</div>
+</MainLayout>

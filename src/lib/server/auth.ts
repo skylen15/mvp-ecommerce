@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { admin, openAPI } from "better-auth/plugins";
 
-import { pool } from "./db/pool";
+import { pool } from "./db/orm";
 
 export const auth = betterAuth({
 	database: pool,

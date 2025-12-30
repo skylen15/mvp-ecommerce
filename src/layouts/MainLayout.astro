@@ -1,0 +1,115 @@
+---
+import { Image } from "astro:assets";
+import ShoppingCartPlusIcon from "@tabler/icons/outline/shopping-cart-plus.svg";
+// import UsersIcon from "@tabler/icons/outline/users.svg";
+
+import astroLogo from "@/assets/astro.svg";
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@/components/starwind/avatar";
+import {
+    Dropdown,
+    DropdownContent,
+    DropdownItem,
+    DropdownLabel,
+    DropdownSeparator,
+    DropdownTrigger,
+} from "@/components/starwind/dropdown";
+import {
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarMenuSub,
+    SidebarMenuSubButton,
+    SidebarMenuSubItem,
+} from "@/components/sidebar";
+import BaseLayout from "./BaseLayout.astro";
+---
+
+<BaseLayout {...Astro.props}>
+    <header
+        class="p-4 flex justify-between items-center border-b-2 border-background-200"
+    >
+        <Image src={astroLogo} alt="Astro Logo" loading="eager" />
+        <div class="flex items-center gap-4">
+            <ShoppingCartPlusIcon />
+            <Dropdown>
+                <DropdownTrigger asChild>
+                    <Avatar>
+                        <AvatarImage
+                            src={Astro.locals.user?.image ||
+                                "https://avatar.iran.liara.run/public/11"}
+                            alt={Astro.locals.user?.name ?? "User avatar"}
+                        />
+                        <AvatarFallback>A</AvatarFallback>
+                    </Avatar>
+                </DropdownTrigger>
+                <DropdownContent align="end">
+                    <DropdownLabel>My Account</DropdownLabel>
+                    <DropdownSeparator />
+                    <DropdownItem as="a" href="/profile">Profile</DropdownItem>
+                    <DropdownItem>Settings</DropdownItem>
+                    <DropdownSeparator />
+                    <DropdownItem>Help</DropdownItem>
+                    <DropdownItem id="sign-out">Sign out</DropdownItem>
+                </DropdownContent>
+            </Dropdown>
+        </div>
+    </header>
+    <main class="grid grid-cols-8 min-h-dvh">
+        <SidebarMenu
+            class="p-2 space-y-2 border-r-2 border-background-200 col-span-1"
+        >
+            <SidebarMenuItem>
+                <SidebarMenuButton>
+                    <!-- <UsersIcon /> -->
+                    <span>Users</span>
+                </SidebarMenuButton>
+                <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/projects/web">
+                            Web App
+                        </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/projects/mobile">
+                            Mobile App
+                        </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/projects/api">
+                            API
+                        </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                </SidebarMenuSub>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <SidebarMenuButton href="/settings">
+                    <!-- <Icon name="settings" /> -->
+                    <span>Settings</span>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+        </SidebarMenu>
+        <div class="col-span-7 p-2">
+            <slot />
+        </div>
+    </main>
+</BaseLayout>
+
+<script>
+    import { authClient } from "@/lib/auth-client";
+
+    document.querySelector("#sign-out")?.addEventListener(
+        "click",
+        async () =>
+            await authClient.signOut({
+                fetchOptions: {
+                    onSuccess: () => {
+                        window.location.assign("/");
+                    },
+                },
+            })
+    );
+</script>

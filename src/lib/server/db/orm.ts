@@ -1,18 +1,24 @@
-import { hashPassword } from "better-auth/crypto";
-import { Data, DateTime, Effect, flow, Schema } from "effect";
+import { Data, Effect, flow, Schema } from "effect";
 import { Kysely, PostgresDialect } from "kysely";
+import { Pool } from "pg";
 
-import { Account, User, UserId } from "@/features/auth/schema";
-import { singleResult } from "../utils/filter";
-import type { DB } from "./db";
-import { pool } from "./pool";
+import { EnvConfig } from "../configs";
+import type { DB } from "./types";
 
-class DbError extends Data.TaggedError("DBError")<{
+export class DbError extends Data.TaggedError("DBError")<{
 	cause: unknown;
 }> {}
 
+export const pool = await Effect.gen(function* () {
+	const config = yield* EnvConfig;
+	yield* Effect.log("Creating database pool");
+	return new Pool({
+		connectionString: config.databaseUrl,
+	});
+}).pipe(Effect.provide(EnvConfig.Default), Effect.runPromise);
+
 export class DbORM extends Effect.Service<DbORM>()(
-	"mvp-ecommerce/lib/server/db/index/DbORM",
+	"mvp-ecommerce/lib/server/db/effect-orm/DbORM",
 	{
 		effect: Effect.gen(function* () {
 			const dialect = new PostgresDialect({
@@ -35,96 +41,20 @@ export class DbORM extends Effect.Service<DbORM>()(
 						(error) => new DbError({ cause: error.message }),
 					),
 					Effect.flatMap(exec),
-					Effect.tap((_) => Effect.log("Inserted", _)),
 				);
 
-			const query = <R>(execute: (_: typeof db) => Promise<R>) =>
+			const query = <R>(
+				execute: (_: typeof db) => Promise<R>,
+				message: string = "",
+			) =>
 				Effect.tryPromise({
 					try: () => execute(db),
-					catch: (error) => new DbError({ cause: error }),
+					catch: (error) => new DbError({ cause: message || error }),
 				});
 
 			return {
-				query,
 				execute,
-				user: {
-					createAdmin: (
-						data: typeof User.Type & {
-							password: string;
-						},
-					) =>
-						Effect.gen(function* () {
-							const createdUser = yield* execute(User, (values) =>
-								query((_) =>
-									_.insertInto("user")
-										.values({
-											...values,
-											emailVerified: false,
-										})
-										.returning(["id as userId"])
-										.execute(),
-								),
-							)(data).pipe(
-								singleResult(
-									() =>
-										new DbError({
-											cause: "Failed to create admin user",
-										}),
-								),
-							);
-
-							const accountData = {
-								userId: UserId.make(createdUser.userId),
-								accountId: UserId.make(createdUser.userId),
-								providerId: "credential",
-								password: yield* Effect.promise(() =>
-									hashPassword(data.password),
-								),
-							} satisfies typeof Account.Type;
-
-							const createdAccount = yield* execute(
-								Account,
-								(acc) =>
-									query((_) =>
-										_.insertInto("account")
-											.values({
-												...acc,
-												password: accountData.password,
-												updatedAt:
-													DateTime.formatIsoDateUtc(
-														DateTime.unsafeNow(),
-													),
-											})
-											.returning(["id as accountId"])
-											.execute(),
-									),
-							)(accountData).pipe(
-								singleResult(
-									() =>
-										new DbError({
-											cause: "Failed to create account user",
-										}),
-								),
-							);
-
-							return createdAccount;
-						}),
-
-					checkAdminExists: query((_) =>
-						_.selectFrom("user")
-							.where("role", "=", "admin")
-							.select(["id"])
-							.limit(1)
-							.execute(),
-					).pipe(
-						singleResult(
-							() => new DbError({ cause: "No admin user found" }),
-						),
-						Effect.catchTag("DBError", () =>
-							Effect.succeed({ id: null }),
-						),
-					),
-				},
+				query,
 			} as const;
 		}),
 	},
