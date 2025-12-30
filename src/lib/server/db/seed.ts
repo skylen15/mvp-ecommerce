@@ -1,20 +1,21 @@
 import { Effect } from "effect";
+
+import { AdminQueries } from "@/features/admin/services/queries";
 import { EnvConfig } from "../configs";
 import { RuntimeServer } from "../runtime";
-import { DbORM } from "./orm";
 
 Effect.gen(function* () {
-	const orm = yield* DbORM;
+	const { checkAdminExists, createAdmin } = yield* AdminQueries;
 	const config = yield* EnvConfig;
 
-	const adminExisted = yield* orm.user.checkAdminExists;
+	const adminExisted = yield* checkAdminExists;
 
 	if (adminExisted.id) {
 		yield* Effect.log("Admin user already exists");
 		return;
 	}
 
-	yield* orm.user.createAdmin({
+	yield* createAdmin({
 		...config.admin,
 		role: "admin",
 	});

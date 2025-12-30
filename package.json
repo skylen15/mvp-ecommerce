@@ -7,7 +7,7 @@
 		"build": "astro build",
 		"preview": "astro preview",
 		"astro": "astro",
-		"kysely:codegen": "kysely-codegen --dialect postgres --runtime-enums=screaming-snake-case --out-file ./src/lib/server/db/db.d.ts",
+		"kysely:codegen": "kysely-codegen --dialect postgres --runtime-enums=screaming-snake-case --out-file ./src/lib/server/db/types.ts",
 		"auth:migrate": "pnpm dlx @better-auth/cli migrate --config ./src/lib/server/auth.ts",
 		"auth:gen": "pnpm dlx @better-auth/cli generate --config ./src/lib/server/auth.ts",
 		"db:seed": "tsx ./src/lib/server/db/seed.ts"
@@ -16,6 +16,8 @@
 		"@astrojs/node": "^9.5.1",
 		"@effect/platform": "^0.94.0",
 		"@effect/platform-node": "^0.104.0",
+		"@effect/sql-kysely": "^0.45.0",
+		"@effect/sql-pg": "^0.50.0",
 		"@node-rs/argon2": "^2.0.2",
 		"@tabler/icons": "^3.36.0",
 		"@tailwindcss/forms": "^0.5.11",
