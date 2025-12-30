@@ -1,4 +1,4 @@
-import PgKysely from "@effect/sql-kysely/Pg";
+import * as PgKysely from "@effect/sql-kysely/Pg";
 import { PgClient } from "@effect/sql-pg";
 import { Data, Effect, flow, Layer, Redacted, Schema } from "effect";
 import { Pool } from "pg";
