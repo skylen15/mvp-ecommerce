@@ -17,18 +17,13 @@ export const pool = await Effect.gen(function* () {
 	});
 }).pipe(Effect.provide(EnvConfig.Default), Effect.runPromise);
 
+const dialect = new PostgresDialect({ pool });
+const db = new Kysely<DB>({ dialect });
+
 export class DbORM extends Effect.Service<DbORM>()(
 	"mvp-ecommerce/lib/server/db/effect-orm/DbORM",
 	{
 		effect: Effect.gen(function* () {
-			const dialect = new PostgresDialect({
-				pool,
-			});
-
-			const db = new Kysely<DB>({
-				dialect,
-			});
-
 			const execute = <A, I, T, E>(
 				schema: Schema.Schema<A, I>,
 				exec: (values: I) => Effect.Effect<T, E>,
