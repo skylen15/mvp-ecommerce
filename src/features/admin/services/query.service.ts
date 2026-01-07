@@ -1,9 +1,10 @@
 import { hashPassword } from "better-auth/crypto";
 import { DateTime, Effect, flow } from "effect";
 
-import { Account, User, UserId } from "@/features/auth/schema";
+import { Account, User } from "@/features/auth/schema";
 import { DbError, DbORM } from "@/lib/server/db/orm";
-import { singleResult } from "@/lib/server/utils/filter";
+import { UserIdSchema } from "@/lib/server/schema";
+import { singleResult } from "@/lib/server/utils";
 
 export class AdminQueries extends Effect.Service<AdminQueries>()(
     "mvp-ecommerce/features/admin/services/queries/AdminQueries",
@@ -56,8 +57,8 @@ export class AdminQueries extends Effect.Service<AdminQueries>()(
                         const createdUser = yield* createUser(data);
 
                         const accountData = {
-                            userId: UserId.make(createdUser.userId),
-                            accountId: UserId.make(createdUser.userId),
+                            userId: UserIdSchema.make(createdUser.userId),
+                            accountId: UserIdSchema.make(createdUser.userId),
                             providerId: "credential",
                             password: yield* Effect.promise(() =>
                                 hashPassword(data.password)

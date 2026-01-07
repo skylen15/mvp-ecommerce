@@ -1,98 +1,98 @@
 ---
 import { Button } from "@/components/starwind/button";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "@/components/starwind/card";
 import { Label } from "@/components/starwind/label";
 import { Input } from "@/components/starwind/input";
 import { Spinner } from "@/components/starwind/spinner";
 import {
-	Item,
-	ItemContent,
-	ItemMedia,
-	ItemTitle,
+    Item,
+    ItemContent,
+    ItemMedia,
+    ItemTitle,
 } from "@/components/starwind/item";
 import X from "@tabler/icons/outline/x.svg";
 ---
 
 <main class="flex-1 p-4 flex items-center justify-center">
-	<Card>
-		<CardHeader>
-			<CardTitle>Register your account</CardTitle>
-			<CardDescription>
-				Enter your email below to register your account
-			</CardDescription>
-		</CardHeader>
-		<form id="register-form" method="post">
-			<CardContent>
-				<div class="flex flex-col gap-6">
-					<div class="grid gap-2">
-						<Label for="name">Name</Label>
-						<Input
-							id="name"
-							name="name"
-							type="text"
-							placeholder="John Doe"
-							required
-						/>
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">Email</Label>
-						<Input
-							id="email"
-							type="email"
-							name="email"
-							placeholder="m@example.com"
-							required
-						/>
-					</div>
-					<div class="grid gap-2">
-						<div class="flex items-center">
-							<Label for="password">Password</Label>
-						</div>
-						<Input
-							id="password"
-							type="password"
-							name="password"
-							placeholder="********"
-							required
-						/>
-					</div>
-					<Item
-						variant="outline"
-						size="sm"
-						class="hidden text-error border-error transition-all"
-					>
-						<ItemMedia>
-							<X class="size-5" />
-						</ItemMedia>
-						<ItemContent>
-							<ItemTitle id="error" />
-						</ItemContent>
-					</Item>
-				</div>
-			</CardContent>
-			<CardFooter class="items-center flex justify-between p-8 pt-0">
-				<Button variant="outline" href="/auth/sign-in">Sign In</Button>
-				<Button type="submit">
-					<Spinner class="spinner mr-2 size-4 hidden" />
-					Create Account
-				</Button>
-			</CardFooter>
-		</form>
-	</Card>
+    <Card>
+        <CardHeader>
+            <CardTitle>Register your account</CardTitle>
+            <CardDescription>
+                Enter your email below to register your account
+            </CardDescription>
+        </CardHeader>
+        <form id="register-form" method="post">
+            <CardContent>
+                <div class="flex flex-col gap-6">
+                    <div class="grid gap-2">
+                        <Label for="name">Name</Label>
+                        <Input
+                            id="name"
+                            name="name"
+                            type="text"
+                            placeholder="John Doe"
+                            required
+                        />
+                    </div>
+                    <div class="grid gap-2">
+                        <Label for="email">Email</Label>
+                        <Input
+                            id="email"
+                            type="email"
+                            name="email"
+                            placeholder="m@example.com"
+                            required
+                        />
+                    </div>
+                    <div class="grid gap-2">
+                        <div class="flex items-center">
+                            <Label for="password">Password</Label>
+                        </div>
+                        <Input
+                            id="password"
+                            type="password"
+                            name="password"
+                            placeholder="********"
+                            required
+                        />
+                    </div>
+                    <Item
+                        variant="outline"
+                        size="sm"
+                        class="hidden text-error border-error transition-all"
+                    >
+                        <ItemMedia>
+                            <X class="size-5" />
+                        </ItemMedia>
+                        <ItemContent>
+                            <ItemTitle id="error" />
+                        </ItemContent>
+                    </Item>
+                </div>
+            </CardContent>
+            <CardFooter class="items-center flex justify-between p-8 pt-0">
+                <Button variant="outline" href="/auth/sign-in">Sign In</Button>
+                <Button type="submit">
+                    <Spinner class="spinner mr-2 size-4 hidden" />
+                    Create Account
+                </Button>
+            </CardFooter>
+        </form>
+    </Card>
 </main>
 
 <script>
-	import { submitForm } from "../utils/submit";
+    import { submitForm } from "../utils";
 
-	submitForm({
-		formSelector: "#register-form",
-		type: "sign-up",
-	});
+    submitForm({
+        formSelector: "#register-form",
+        type: "sign-up",
+    });
 </script>
