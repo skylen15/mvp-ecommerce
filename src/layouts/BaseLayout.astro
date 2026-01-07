@@ -1,62 +1,72 @@
 ---
 import { Toaster } from "@/components/starwind/toast";
 import "@/styles/starwind.css";
+import { tv } from "tailwind-variants";
 
 interface Props {
-	title?: string;
-	description?: string;
+    title?: string;
+    description?: string;
+    className?: string;
 }
 
-const { title = "Astro Basics", description } = Astro.props;
+const { title = "Astro Basics", description, className } = Astro.props;
+
+const bodyStyle = tv({
+    base: "flex flex-col min-h-screen",
+});
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<meta name="description" content={description} />
-		<style>
-			@view-transition {
-				navigation: auto;
-			}
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <style>
+            @view-transition {
+                navigation: auto;
+            }
 
-			::view-transition-group(root) {
-				animation-duration: 0.5s;
-			}
+            ::view-transition-group(root) {
+                animation-duration: 0.5s;
+            }
 
-			@keyframes slideIn {
-				from {
-					transform: translateX(-100%);
-				}
-				to {
-					transform: translateX(0);
-				}
-			}
+            @keyframes slideIn {
+                from {
+                    transform: translateX(-100%);
+                }
+                to {
+                    transform: translateX(0);
+                }
+            }
 
-			@keyframes slideOut {
-				from {
-					transform: translateX(0);
-				}
-				to {
-					transform: translateX(100%);
-				}
-			}
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                }
+                to {
+                    transform: translateX(100%);
+                }
+            }
 
-			::view-transition-old(root) {
-				animation: 0.4s ease-in both slideOut;
-			}
+            ::view-transition-old(root) {
+                animation: 0.4s ease-in both slideOut;
+            }
 
-			::view-transition-new(root) {
-				animation: 0.4s ease-in both slideIn;
-			}
-		</style>
-	</head>
-	<body class="flex flex-col min-h-screen">
-		<slot />
-		<Toaster position="bottom-right" />
-	</body>
+            ::view-transition-new(root) {
+                animation: 0.4s ease-in both slideIn;
+            }
+        </style>
+    </head>
+    <body
+        class={bodyStyle({
+            class: className,
+        })}
+    >
+        <slot />
+        <Toaster position="bottom-right" />
+    </body>
 </html>
